@@ -3,18 +3,83 @@ import PropTypes from 'prop-types';
 import restaurantImage from './restaurant.jpg'; 
 
 // інформація про ресторан
-const RestaurantInfo = ({ name, address, rating, cuisine, imageUrl }) => {
+const RestaurantInfo = (props) => {
+  const [isEditing, setIsEditing] = useState(false);
+  
+  const [restaurantData, setRestaurantData] = useState({
+    name: props.name,
+    address: props.address,
+    rating: props.rating,
+    cuisine: props.cuisine,
+    imageUrl: props.imageUrl,
+  });
+
+  // оновлення стану при введенні тексту
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setRestaurantData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  // збереження
+  const handleSave = () => {
+    setIsEditing(false);
+  };
+
+  // режим редагування
+  if (isEditing) {
+    return (
+      <div style={{ border: '1px solid #ccc', padding: '16px', borderRadius: '8px', width: '100%', maxWidth: '400px', backgroundColor: '#fdfdfd' }}>
+        <h3>Редагування інформації</h3>
+        
+        <div style={{ marginBottom: '10px' }}>
+          <label>Назва:</label>
+          <input type="text" name="name" value={restaurantData.name} onChange={handleChange} style={{ width: '100%', padding: '6px', marginTop: '4px', boxSizing: 'border-box' }} />
+        </div>
+        
+        <div style={{ marginBottom: '10px' }}>
+          <label>Адреса:</label>
+          <input type="text" name="address" value={restaurantData.address} onChange={handleChange} style={{ width: '100%', padding: '6px', marginTop: '4px', boxSizing: 'border-box' }} />
+        </div>
+        
+        <div style={{ marginBottom: '10px' }}>
+          <label>Рейтинг:</label>
+          <input type="number" step="0.1" name="rating" value={restaurantData.rating} onChange={handleChange} style={{ width: '100%', padding: '6px', marginTop: '4px', boxSizing: 'border-box' }} />
+        </div>
+        
+        <div style={{ marginBottom: '10px' }}>
+          <label>Тип кухні:</label>
+          <input type="text" name="cuisine" value={restaurantData.cuisine} onChange={handleChange} style={{ width: '100%', padding: '6px', marginTop: '4px', boxSizing: 'border-box' }} />
+        </div>
+
+        <button onClick={handleSave} style={{ padding: '8px 16px', cursor: 'pointer', backgroundColor: '#4CAF50', color: 'white', border: 'none', borderRadius: '4px', width: '100%', marginTop: '10px' }}>
+          Зберегти
+        </button>
+      </div>
+    );
+  }
+
+  // режим перегляду
   return (
     <div style={{ border: '1px solid #ccc', padding: '16px', borderRadius: '8px', width: '100%', maxWidth: '400px' }}>
       <img 
-        src={imageUrl} 
-        alt={`Будівля ресторану ${name}`} 
+        src={restaurantData.imageUrl} 
+        alt={`Будівля ресторану ${restaurantData.name}`} 
         style={{ width: '100%', height: 'auto', borderRadius: '4px' }}
-        />
-      <h2>{name}</h2>
-      <p><strong>Адреса:</strong> {address}</p>
-      <p><strong>Рейтинг:</strong> {rating} / 5</p>
-      <p><strong>Тип кухні:</strong> {cuisine}</p>
+      />
+      <h2>{restaurantData.name}</h2>
+      <p><strong>Адреса:</strong> {restaurantData.address}</p>
+      <p><strong>Рейтинг:</strong> {restaurantData.rating} / 5</p>
+      <p><strong>Тип кухні:</strong> {restaurantData.cuisine}</p>
+      
+      <button 
+        onClick={() => setIsEditing(true)} 
+        style={{ marginTop: '10px', padding: '8px 16px', cursor: 'pointer', width: '100%' }}
+      >
+        Редагувати
+      </button>
     </div>
   );
 };
@@ -22,7 +87,7 @@ const RestaurantInfo = ({ name, address, rating, cuisine, imageUrl }) => {
 RestaurantInfo.propTypes = {
   name: PropTypes.string.isRequired,
   address: PropTypes.string.isRequired,
-  rating: PropTypes.number.isRequired,
+  rating: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   cuisine: PropTypes.string.isRequired,
   imageUrl: PropTypes.string.isRequired,
 };
